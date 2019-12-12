@@ -11,22 +11,35 @@ import java.util.Properties;
  * secureIn den oku (444) -> listenOut a yaz
  */
 
-public class SSLSocketClient {
+public class SSLSocketClient extends Thread{
 	
-	static DataInputStream listenIn;
-	static DataOutputStream listenOut;
-	static DataInputStream secureIn;
-	static DataOutputStream secureOut;
+	private int ClientSecureSocketListenPort;
+	private int ClientLocalListenPort;
+	
+	
+	DataInputStream listenIn;
+	DataOutputStream listenOut;
+	DataInputStream secureIn;
+	DataOutputStream secureOut;
 
-    public static void main(String[] args) throws Exception {
+	public SSLSocketClient(int ClientSecureSocketListenPort, int ClientLocalListenPort) {
+		this.ClientSecureSocketListenPort = ClientSecureSocketListenPort;
+		this.ClientLocalListenPort = ClientLocalListenPort;
+	}
 
 
-    Properties systemProps = System.getProperties();
-    systemProps.put("javax.net.ssl.trustStore", "keystore.ImportKey");
+
+	public void run() {
+    	
+    	new TrayManager("Secure Socket Client(" + ClientLocalListenPort + ")");	//Tray Icon Yarat
+
+	    Properties systemProps = System.getProperties();
+	    systemProps.put("javax.net.ssl.trustStore", "keystore.ImportKey");
+	    
         try {
         	
         	@SuppressWarnings("resource")
-        	ServerSocket listenSocketPort = new ServerSocket(4445);
+        	ServerSocket listenSocketPort = new ServerSocket(ClientLocalListenPort);
         	Socket listen_socket = listenSocketPort.accept();
         	
             
@@ -36,7 +49,7 @@ public class SSLSocketClient {
         	
         	
             SSLSocketFactory factory = getSSLSocketFactory("TLS");
-            SSLSocket secure_socket = (SSLSocket)factory.createSocket("localhost", 444);
+            SSLSocket secure_socket = (SSLSocket)factory.createSocket("localhost", ClientSecureSocketListenPort);
             
             secureIn = new DataInputStream(new BufferedInputStream(secure_socket.getInputStream()));
             secureOut=new DataOutputStream(secure_socket.getOutputStream());	// INPUT STREAM
@@ -53,7 +66,7 @@ public class SSLSocketClient {
                     	
                     	//bReader dan okur listenOut a yazar
                         int IN=0; 
-                        byte[] receivedData = new byte[999999999];
+                        byte[] receivedData = new byte[9999999];
                         while ((IN = listenIn.read(receivedData)) != -1){	//Read until return -1
                         	secureOut.write(receivedData,0,IN);
                         	secureOut.flush();
@@ -80,7 +93,7 @@ public class SSLSocketClient {
                          
                          //listenIn den okur bWriter a yazar
                          int OUT=0; 
-                         byte[] sendedData = new byte[999999999];
+                         byte[] sendedData = new byte[9999999];
                          while ((OUT = secureIn.read(sendedData)) != -1){	//Read until return -1
                          	listenOut.write(sendedData,0,OUT);
                          	listenOut.flush();

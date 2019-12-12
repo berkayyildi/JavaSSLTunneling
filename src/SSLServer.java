@@ -6,41 +6,41 @@ import java.util.HashMap;
 import javax.net.*;
 import javax.net.ssl.*;
 
-public class SSLServer {
+public class SSLServer extends Thread{
 	
+	private int ServerSecureSocketListenPort;
+	private int ServerLocalListenPort;
 	
-	private static HashMap<Socket, String> hashMap = new HashMap<Socket, String>();
+	private HashMap<Socket, String> hashMap = new HashMap<Socket, String>();
 
-	public static void main(String[] args) throws Exception {
-		
+	public SSLServer(int ServerSecureSocketListenPort, int ServerLocalListenPort) {
+		this.ServerSecureSocketListenPort = ServerSecureSocketListenPort;
+		this.ServerLocalListenPort = ServerLocalListenPort;
+	}
+
+	public void run() {
+
+		new TrayManager("Secure Socket Server(" + ServerLocalListenPort + ")");	//Tray Icon Yarat
+
 		
 		int i = 0;
 		
 		try {
 			
 			ServerSocketFactory ssf = SSLServer.getServerSocketFactory("TLS");
-			ServerSocket ss = ssf.createServerSocket(444);
+			ServerSocket ss = ssf.createServerSocket(ServerSecureSocketListenPort);
 						
 			while (true) {
-				Socket s = ss.accept();
+				Socket socket = ss.accept();
 				i++;
-				getHashMap().put(s, "Client " + i);
-				new ServerHelper(s).start();
+				hashMap.put(socket, "Client " + i);
+				new ServerHelper(socket,ServerLocalListenPort).start();
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 	}
 
-	public static synchronized HashMap<Socket, String> getHashMap() {
-		return hashMap;
-	}
-
-	public static synchronized void setHashMap(HashMap<Socket, String> hashMap) {
-		SSLServer.hashMap = hashMap;
-	}
-	
-		
 
 	
 

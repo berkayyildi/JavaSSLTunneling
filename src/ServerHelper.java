@@ -15,15 +15,15 @@ import java.net.Socket;
 public class ServerHelper extends Thread {
 
 		private Socket secure_socket;
+		int ServerLocalListenPort;
 
-		public ServerHelper(Socket incoming) {
+		public ServerHelper(Socket incoming, int ServerLocalListenPort) {
 			this.secure_socket = incoming;
+			this.ServerLocalListenPort = ServerLocalListenPort;
 		}
 
 		public void run() {
 			try {
-				
-				
 				
 
 				DataInputStream bReader = new DataInputStream(new BufferedInputStream(secure_socket.getInputStream()));
@@ -31,7 +31,7 @@ public class ServerHelper extends Thread {
 				
 				
 				@SuppressWarnings("resource")
-				Socket listen_socket=new Socket("localhost",4444);	//PROXY PORTU
+				Socket listen_socket=new Socket("localhost",ServerLocalListenPort);	//PROXY PORTU
 				DataInputStream listenIn = new DataInputStream(new BufferedInputStream(listen_socket.getInputStream()));
 				DataOutputStream listenOut=new DataOutputStream(listen_socket.getOutputStream());	//PROXY INPUT STREAM
 				
@@ -44,7 +44,7 @@ public class ServerHelper extends Thread {
 	                    	
 	            			//bReader dan okur listenOut a yazar
 	        	            int IN=0; 
-	        	            byte[] receivedData = new byte[999999999];
+	        	            byte[] receivedData = new byte[9999999];
 	        	            while ((IN = bReader.read(receivedData)) != -1){	//Read until return -1
 	        	            	listenOut.write(receivedData,0,IN);
 	        	            	listenOut.flush();
@@ -67,7 +67,7 @@ public class ServerHelper extends Thread {
 	                    	
 	                    	//listenIn den okur bWriter a yazar
 	        	            int OUT=0; 
-	        	            byte[] sendedData = new byte[999999999];
+	        	            byte[] sendedData = new byte[9999999];
 	        	            while ((OUT = listenIn.read(sendedData)) != -1){	//Read until return -1
 	        	            	bWriter.write(sendedData,0,OUT);
 	        	            	bWriter.flush();
