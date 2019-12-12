@@ -1,7 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.HashMap;
 
@@ -21,7 +19,7 @@ public class SSLServer {
 		try {
 			
 			ServerSocketFactory ssf = SSLServer.getServerSocketFactory("TLS");
-			ServerSocket ss = ssf.createServerSocket(9999);
+			ServerSocket ss = ssf.createServerSocket(444);
 						
 			while (true) {
 				Socket s = ss.accept();

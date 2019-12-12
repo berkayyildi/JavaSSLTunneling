@@ -1,12 +1,22 @@
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.security.KeyStore;
 import javax.net.*;
 import javax.net.ssl.*;
 import java.util.Properties;
-import java.util.Scanner;
 
+/*
+ * listenIn den oku (4445) -> secureOut a yaz
+ * secureIn den oku (444) -> listenOut a yaz
+ */
 
-public class SSLSocketClient {
+public class SSLSocketClient  implements Runnable{
+	
+	static DataInputStream listenIn;
+	static DataOutputStream listenOut;
+	static DataInputStream secureIn;
+	static DataOutputStream secureOut;
 
     public static void main(String[] args) throws Exception {
 
@@ -14,57 +24,55 @@ public class SSLSocketClient {
     Properties systemProps = System.getProperties();
     systemProps.put("javax.net.ssl.trustStore", "keystore.ImportKey");
         try {
+        	
+        	@SuppressWarnings("resource")
+        	ServerSocket listenSocketPort = new ServerSocket(4445);
+        	Socket listen_socket = listenSocketPort.accept();
+        	
+            
+			listenIn = new DataInputStream(new BufferedInputStream(listen_socket.getInputStream()));
+			listenOut=new DataOutputStream(listen_socket.getOutputStream());	// INPUT STREAM
+        	
+        	
+        	
             SSLSocketFactory factory = getSSLSocketFactory("TLS");
-            SSLSocket socket =
-                (SSLSocket)factory.createSocket("localhost", 9999);
-
-            socket.startHandshake();
-
-            PrintWriter out = new PrintWriter(
-                                  new BufferedWriter(
-                                  new OutputStreamWriter(
-                                  socket.getOutputStream())));
+            SSLSocket secure_socket = (SSLSocket)factory.createSocket("localhost", 444);
             
-
-            System.out.print("Enter File Name: ");
+            secureIn = new DataInputStream(new BufferedInputStream(secure_socket.getInputStream()));
+            secureOut=new DataOutputStream(secure_socket.getOutputStream());	// INPUT STREAM
             
-            @SuppressWarnings("resource")
-			Scanner scan = new Scanner(System.in);
-            String fileNametoGet = scan.next();
-            
-
-            out.print(fileNametoGet + "\n");
-            out.flush();
-
-            if (out.checkError())
-                System.out.println(
-                    "SSLSocketClient:  java.io.PrintWriter error");
+            secure_socket.startHandshake();
 
             
-            /* read response */
-            DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            /*Write request*/
             
-            int length = 0;
-            try {
-            	length = in.readInt();	//Read length
-            }
-            catch (Exception e) {
-				System.out.println("File Not Found");
-			}
-            
- 
-            @SuppressWarnings("resource")
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("received_" + fileNametoGet));
+			//bReader dan okur listenOut a yazar
             int IN=0; 
-            byte[] receivedData = new byte[length];
-            while ((IN = in.read(receivedData)) != -1){	//Read until return -1
-            	bos.write(receivedData,0,IN);
+            byte[] receivedData = new byte[999999999];
+            while ((IN = listenIn.read(receivedData)) != -1){	//Read until return -1
+            	secureOut.write(receivedData,0,IN);
+            	secureOut.flush();
             }
             
-            bos.close();	//Bu text dosya olayini cozdu
-            in.close();
-            out.close();
-            socket.close();
+            
+
+            
+            
+            //listenIn den okur bWriter a yazar
+            int OUT=0; 
+            byte[] sendedData = new byte[999999999];
+            while ((OUT = secureIn.read(sendedData)) != -1){	//Read until return -1
+            	listenOut.write(sendedData,0,OUT);
+            	listenOut.flush();
+            }
+            
+            
+          
+
+ 
+            //secureIn.close();
+            //secureOut.close();
+            //secure_socket.close();
             
             //fileNametoGet = scan.next();	//WAIT UNTIL INPUT (For MultiThread Test)
 
@@ -72,6 +80,15 @@ public class SSLSocketClient {
             e.printStackTrace();
         }
     }
+
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 
 	private static SSLSocketFactory getSSLSocketFactory(String type) {
 		if (type.equals("TLS")) {
@@ -101,4 +118,5 @@ public class SSLSocketClient {
 		}
 		return null;
         }
+	
 }
