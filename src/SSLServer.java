@@ -3,43 +3,48 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.util.HashMap;
+
 import javax.net.*;
 import javax.net.ssl.*;
 
 public class SSLServer {
 	
-	static String fileNameToRead = "";
+	
+	private static HashMap<Socket, String> hashMap = new HashMap<Socket, String>();
 
 	public static void main(String[] args) throws Exception {
-
-		ServerSocketFactory ssf = SSLServer.getServerSocketFactory("TLS");
-		ServerSocket ss = ssf.createServerSocket(9999);
-
-		Socket s = ss.accept();
 		
-		BufferedReader bReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		DataOutputStream bWriter = new DataOutputStream(s.getOutputStream());
-
-		fileNameToRead = bReader.readLine();
 		
-		byte[] fileContent = null;
+		int i = 0;
 		
-		 try {
-			 fileContent = Files.readAllBytes(Paths.get(fileNameToRead));
-	        } catch (Exception Hata) {
-	            System.out.println(" Ýþlem yapýlýrken matematiksel bir hata oluþtu :" + Hata.getMessage());
-	            s.close();
-	    		ss.close();
-	    		System.exit(0);
-	        }
-		 
-		bWriter.writeInt(fileContent.length);
-		bWriter.write(fileContent);	//byte yapildi
-		
-		s.close();
-		ss.close();
-
+		try {
+			
+			ServerSocketFactory ssf = SSLServer.getServerSocketFactory("TLS");
+			ServerSocket ss = ssf.createServerSocket(9999);
+						
+			while (true) {
+				Socket s = ss.accept();
+				i++;
+				getHashMap().put(s, "Client " + i);
+				new ServerHelper(s).start();
+			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
+
+	public static synchronized HashMap<Socket, String> getHashMap() {
+		return hashMap;
+	}
+
+	public static synchronized void setHashMap(HashMap<Socket, String> hashMap) {
+		SSLServer.hashMap = hashMap;
+	}
+	
+		
+
+	
 
 	private static ServerSocketFactory getServerSocketFactory(String type) {
 		if (type.equals("TLS")) {

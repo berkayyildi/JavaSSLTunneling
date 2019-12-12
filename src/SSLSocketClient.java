@@ -40,13 +40,13 @@ public class SSLSocketClient {
                 System.out.println(
                     "SSLSocketClient:  java.io.PrintWriter error");
 
+            
             /* read response */
             DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
             
             int length = 0;
             try {
-            	length = in.readInt();
+            	length = in.readInt();	//Read length
             }
             catch (Exception e) {
 				System.out.println("File Not Found");
@@ -54,19 +54,19 @@ public class SSLSocketClient {
             
  
             @SuppressWarnings("resource")
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("test"));
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("received_" + fileNametoGet));
             int IN=0; 
             byte[] receivedData = new byte[length];
-            while ((IN = in.read(receivedData)) != -1){
+            while ((IN = in.read(receivedData)) != -1){	//Read until return -1
             	bos.write(receivedData,0,IN);
             }
-             
-
-
+            
+            bos.close();	//Bu text dosya olayini cozdu
             in.close();
             out.close();
             socket.close();
             
+            //fileNametoGet = scan.next();	//WAIT UNTIL INPUT (For MultiThread Test)
 
         } catch (Exception e) {
             e.printStackTrace();
