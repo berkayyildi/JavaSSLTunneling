@@ -11,7 +11,7 @@ import java.util.Properties;
  * secureIn den oku (444) -> listenOut a yaz
  */
 
-public class SSLSocketClient  implements Runnable{
+public class SSLSocketClient {
 	
 	static DataInputStream listenIn;
 	static DataOutputStream listenOut;
@@ -43,31 +43,62 @@ public class SSLSocketClient  implements Runnable{
             
             secure_socket.startHandshake();
 
-            
-            /*Write request*/
-            
-			//bReader dan okur listenOut a yazar
-            int IN=0; 
-            byte[] receivedData = new byte[999999999];
-            while ((IN = listenIn.read(receivedData)) != -1){	//Read until return -1
-            	secureOut.write(receivedData,0,IN);
-            	secureOut.flush();
-            }
+  
             
             
+            
+            Runnable run2 = new Runnable() {
+                public void run() {
+                    try {
+                    	
+                    	//bReader dan okur listenOut a yazar
+                        int IN=0; 
+                        byte[] receivedData = new byte[999999999];
+                        while ((IN = listenIn.read(receivedData)) != -1){	//Read until return -1
+                        	secureOut.write(receivedData,0,IN);
+                        	secureOut.flush();
+                        }
+                        
+                        
 
-            
-            
-            //listenIn den okur bWriter a yazar
-            int OUT=0; 
-            byte[] sendedData = new byte[999999999];
-            while ((OUT = secureIn.read(sendedData)) != -1){	//Read until return -1
-            	listenOut.write(sendedData,0,OUT);
-            	listenOut.flush();
-            }
-            
-            
-          
+                    } catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                }
+             };
+             new Thread(run2).start();
+             
+             
+             
+             
+             
+             Runnable run = new Runnable() {
+                 public void run() {
+                     try {
+                     	
+                         
+                         //listenIn den okur bWriter a yazar
+                         int OUT=0; 
+                         byte[] sendedData = new byte[999999999];
+                         while ((OUT = secureIn.read(sendedData)) != -1){	//Read until return -1
+                         	listenOut.write(sendedData,0,OUT);
+                         	listenOut.flush();
+                         }
+                        
+                      
+                         
+
+                     } catch (IOException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					}
+                 }
+              };
+              new Thread(run).start();
+  
+              
+              
 
  
             //secureIn.close();
@@ -82,13 +113,6 @@ public class SSLSocketClient  implements Runnable{
     }
 
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
 
 	private static SSLSocketFactory getSSLSocketFactory(String type) {
 		if (type.equals("TLS")) {
