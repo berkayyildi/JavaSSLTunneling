@@ -1,3 +1,5 @@
+package ssltunnel;
+
 import java.io.*;
 import java.net.*;
 import java.security.KeyStore;
@@ -10,17 +12,21 @@ public class SSLServer extends Thread{
 	
 	private int ServerSecureSocketListenPort;
 	private int ServerLocalListenPort;
+	private String destinationIp;
+	private String Key;
 	
 	private HashMap<Socket, String> hashMap = new HashMap<Socket, String>();
 
-	public SSLServer(int ServerSecureSocketListenPort, int ServerLocalListenPort) {
+	public SSLServer(int ServerSecureSocketListenPort, int ServerLocalListenPort, String destinationIp, String Key) {
 		this.ServerSecureSocketListenPort = ServerSecureSocketListenPort;
 		this.ServerLocalListenPort = ServerLocalListenPort;
+		this.destinationIp = destinationIp;
+		this.Key = Key;
 	}
 
 	public void run() {
 
-		new TrayManager("Secure Socket Server(" + ServerLocalListenPort + ")");	//Tray Icon Yarat
+		new TrayManager("Secure Socket Server(" + destinationIp + ":" + ServerLocalListenPort + ")");	//Tray Icon Yarat
 
 		
 		int i = 0;
@@ -34,7 +40,7 @@ public class SSLServer extends Thread{
 				Socket socket = ss.accept();
 				i++;
 				hashMap.put(socket, "Client " + i);
-				new ServerHelper(socket,ServerLocalListenPort).start();
+				new ServerHelper(socket,ServerLocalListenPort,destinationIp,Key).start();
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();

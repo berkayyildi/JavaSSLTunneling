@@ -1,3 +1,5 @@
+package ssltunnel;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,26 +17,30 @@ public class SSLSocketClient extends Thread{
 	
 	private int ClientSecureSocketListenPort;
 	private int ClientLocalListenPort;
-	
-	
-	DataInputStream listenIn;
-	DataOutputStream listenOut;
-	DataInputStream secureIn;
-	DataOutputStream secureOut;
+	private String destinationIp;
+	private String Key;
 
-	public SSLSocketClient(int ClientSecureSocketListenPort, int ClientLocalListenPort) {
+	private DataInputStream listenIn;
+	private DataOutputStream listenOut;
+	private DataInputStream secureIn;
+	private DataOutputStream secureOut;
+
+	public SSLSocketClient(int ClientSecureSocketListenPort, int ClientLocalListenPort, String destinationIp, String Key) {
 		this.ClientSecureSocketListenPort = ClientSecureSocketListenPort;
 		this.ClientLocalListenPort = ClientLocalListenPort;
+		this.destinationIp = destinationIp;
+		this.Key = Key;
+
 	}
 
 
 
 	public void run() {
     	
-    	new TrayManager("Secure Socket Client(" + ClientLocalListenPort + ")");	//Tray Icon Yarat
+    	new TrayManager("Secure Socket Client(" + destinationIp + ":" + ClientLocalListenPort + ")");	//Tray Icon Yarat
 
 	    Properties systemProps = System.getProperties();
-	    systemProps.put("javax.net.ssl.trustStore", "keystore.ImportKey");
+	    systemProps.put("javax.net.ssl.trustStore", Key);
 	    
         try {
         	
@@ -49,7 +55,7 @@ public class SSLSocketClient extends Thread{
         	
         	
             SSLSocketFactory factory = getSSLSocketFactory("TLS");
-            SSLSocket secure_socket = (SSLSocket)factory.createSocket("localhost", ClientSecureSocketListenPort);
+            SSLSocket secure_socket = (SSLSocket)factory.createSocket(destinationIp, ClientSecureSocketListenPort);
             
             secureIn = new DataInputStream(new BufferedInputStream(secure_socket.getInputStream()));
             secureOut=new DataOutputStream(secure_socket.getOutputStream());	// INPUT STREAM
