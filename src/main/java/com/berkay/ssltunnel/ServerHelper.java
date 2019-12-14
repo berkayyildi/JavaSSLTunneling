@@ -1,4 +1,4 @@
-package ssltunnel;
+package com.berkay.ssltunnel;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

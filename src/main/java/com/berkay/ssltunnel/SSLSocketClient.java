@@ -1,4 +1,4 @@
-package ssltunnel;
+package com.berkay.ssltunnel;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -70,7 +70,7 @@ public class SSLSocketClient extends Thread{
                 public void run() {
                     try {
                     	
-                    	//bReader dan okur listenOut a yazar
+                    	//listenIn dan okur secureOut a yazar
                         int IN=0; 
                         byte[] receivedData = new byte[9999999];
                         while ((IN = listenIn.read(receivedData)) != -1){	//Read until return -1
@@ -97,7 +97,7 @@ public class SSLSocketClient extends Thread{
                      try {
                      	
                          
-                         //listenIn den okur bWriter a yazar
+                         //secureIn den okur listenOut a yazar
                          int OUT=0; 
                          byte[] sendedData = new byte[9999999];
                          while ((OUT = secureIn.read(sendedData)) != -1){	//Read until return -1

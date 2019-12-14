@@ -1,4 +1,4 @@
-package ssltunnel;
+package com.berkay.ssltunnel;
 
 import java.awt.AWTException;
 import java.awt.Color;
@@ -41,9 +41,12 @@ public TrayManager(String TrayName) {
 
     try {
       PopupMenu popup = new PopupMenu();
+      MenuItem miEdit = new MenuItem("Editor");
       MenuItem miExit = new MenuItem("Exit");
       MenuItem miAbout = new MenuItem("About");
-      ActionListener al;
+
+      ActionListener al,bl,cl;
+
       al = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           System.out.println("Goodbye");
@@ -51,17 +54,27 @@ public TrayManager(String TrayName) {
         }
       };
       
-      ActionListener bl;
+
       bl = new ActionListener() {
           public void actionPerformed(ActionEvent e) {
         	  JOptionPane.showMessageDialog (null, "From Berkay YILDIZ 20150702058", TrayName, JOptionPane.INFORMATION_MESSAGE);
           }
         };
+
+        cl = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Editor.main("asd");
+
+            }
+        };
       
       miExit.addActionListener(al);
       miAbout.addActionListener(bl);
+      miEdit.addActionListener(cl);
+
       popup.add(miExit);
       popup.add(miAbout);
+      popup.add(miEdit);
 
       TrayIcon ti = new TrayIcon(bi, TrayName, popup);
 
