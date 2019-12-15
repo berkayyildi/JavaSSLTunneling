@@ -55,8 +55,7 @@ public class SSLClientHelper extends Thread {
                 secureIn = new DataInputStream(new BufferedInputStream(secure_socket.getInputStream()));
                 secureOut=new DataOutputStream(new BufferedOutputStream(secure_socket.getOutputStream()));	// INPUT STREAM
 
-
-
+            
                 Runnable run2 = new Runnable() {
                     public void run() {
                         try {
