@@ -1,9 +1,6 @@
 package com.berkay.ssltunnel;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 
@@ -30,29 +27,30 @@ public class ServerHelper extends Thread {
 
 		public void run() {
 			try {
-				
+
 
 				DataInputStream bReader = new DataInputStream(new BufferedInputStream(secure_socket.getInputStream()));
-				DataOutputStream bWriter = new DataOutputStream(secure_socket.getOutputStream());
-				
-				
+				DataOutputStream bWriter = new DataOutputStream(new BufferedOutputStream(secure_socket.getOutputStream()));
+
+
 				@SuppressWarnings("resource")
 				Socket listen_socket=new Socket(destinationIp,ServerLocalListenPort);	//PROXY PORTU
 				DataInputStream listenIn = new DataInputStream(new BufferedInputStream(listen_socket.getInputStream()));
-				DataOutputStream listenOut=new DataOutputStream(listen_socket.getOutputStream());	//PROXY INPUT STREAM
-				
+				DataOutputStream listenOut=new DataOutputStream(new BufferedOutputStream(listen_socket.getOutputStream()));	//PROXY INPUT STREAM
 
-	
-	            
+
+				System.out.println("Server New: " + listen_socket);
+
 	            Runnable run2 = new Runnable() {
 	                public void run() {
 	                    try {
 
+
 	            			//bReader dan okur listenOut a yazar
 	        	            int IN=0;
-	        	            byte[] receivedData = new byte[9999999];
-	        	            while ((IN = bReader.read(receivedData)) != -1){	//Read until return -1
-	        	            	listenOut.write(receivedData,0,IN);
+	        	            while ((IN = bReader.read()) != -1){	//Read until return -1
+								//System.out.format("%c",IN);
+	        	            	listenOut.write(IN);
 	        	            	listenOut.flush();
 	        	            }
 
@@ -65,21 +63,20 @@ public class ServerHelper extends Thread {
 	             };
 	             new Thread(run2).start();
 
-	           
+
 
 	            Runnable run = new Runnable() {
 	                public void run() {
 	                    try {
-	                    	
+
 	                    	//listenIn den okur bWriter a yazar
-	        	            int OUT=0; 
-	        	            byte[] sendedData = new byte[9999999];
-	        	            while ((OUT = listenIn.read(sendedData)) != -1){	//Read until return -1
-	        	            	bWriter.write(sendedData,0,OUT);
+	        	            int IN=0;
+	        	            while ((IN = listenIn.read()) != -1){	//Read until return -1
+	        	            	bWriter.write(IN);
 	        	            	bWriter.flush();
 	        	            }
-	        	            
-	                        
+
+
 
 	                    } catch (IOException e) {
 							// TODO Auto-generated catch block
@@ -88,12 +85,12 @@ public class ServerHelper extends Thread {
 	                }
 	             };
 	             new Thread(run).start();
-	             
-	            
-	          
 
-				
-				
+
+
+
+
+
 				//secure_socket.close();
 				//ss.close();
 				

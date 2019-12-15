@@ -9,5 +9,8 @@
         <module name="MavenSSLTunnelling" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="MavenSSLTunnelling" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

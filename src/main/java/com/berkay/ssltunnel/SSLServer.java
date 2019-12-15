@@ -14,7 +14,7 @@ public class SSLServer extends Thread{
 	private int ServerLocalListenPort;
 	private String destinationIp;
 	private String Key;
-	
+
 	private HashMap<Socket, String> hashMap = new HashMap<Socket, String>();
 
 	public SSLServer(int ServerSecureSocketListenPort, int ServerLocalListenPort, String destinationIp, String Key) {
@@ -26,18 +26,19 @@ public class SSLServer extends Thread{
 
 	public void run() {
 
-		new TrayManager("Secure Socket Server(" + destinationIp + ":" + ServerLocalListenPort + ")");	//Tray Icon Yarat
+		TrayManager tm = new TrayManager("Secure Socket Server(" + destinationIp + ":" + ServerLocalListenPort + ")");	//Tray Icon Yarat
 
-		
+
 		int i = 0;
-		
+
 		try {
 			
 			ServerSocketFactory ssf = SSLServer.getServerSocketFactory("TLS");
 			ServerSocket ss = ssf.createServerSocket(ServerSecureSocketListenPort);
-						
+
 			while (true) {
 				Socket socket = ss.accept();
+				tm.setConnected();
 				i++;
 				hashMap.put(socket, "Client " + i);
 				new ServerHelper(socket,ServerLocalListenPort,destinationIp,Key).start();

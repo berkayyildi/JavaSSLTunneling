@@ -27,7 +27,7 @@ public class SecureTunnel {
 					if(section.get(optionKey).equals("yes")){	//SERVERSA
 						new SSLServer(DestinationPort, ListenPort, DestinationIP, Key).start();	//Server 4444 ten dinlesin
 					}else{	//CLIENTSA
-						new SSLSocketClient(DestinationPort, ListenPort, DestinationIP, Key).start();//Client 4445 ten dinlesin
+						new SSLClient(DestinationPort, ListenPort, DestinationIP, Key).start();//Client 4445 ten dinlesin
 					}
 
 

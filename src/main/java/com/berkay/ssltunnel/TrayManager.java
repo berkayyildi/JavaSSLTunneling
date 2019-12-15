@@ -19,14 +19,17 @@ import java.awt.image.BufferedImage;
 import javax.swing.JOptionPane;
 
 public class TrayManager {
-	
 
-public TrayManager(String TrayName) {
+    private TrayIcon ti;
+    private String TrayName;
+    private SystemTray tray;
+
+    public TrayManager(String TrayName) {
 
     if (!SystemTray.isSupported()) {
       return;
     }
-    SystemTray tray = SystemTray.getSystemTray();
+    tray = SystemTray.getSystemTray();
 
     Dimension size = tray.getTrayIconSize();
     BufferedImage bi = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
@@ -53,20 +56,18 @@ public TrayManager(String TrayName) {
           System.exit(0);
         }
       };
-      
 
       bl = new ActionListener() {
           public void actionPerformed(ActionEvent e) {
         	  JOptionPane.showMessageDialog (null, "From Berkay YILDIZ 20150702058", TrayName, JOptionPane.INFORMATION_MESSAGE);
           }
-        };
+      };
 
-        cl = new ActionListener() {
+      cl = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Editor.main("asd");
-
+                Editor.main();  //SHOW EDITOR
             }
-        };
+       };
       
       miExit.addActionListener(al);
       miAbout.addActionListener(bl);
@@ -76,63 +77,37 @@ public TrayManager(String TrayName) {
       popup.add(miAbout);
       popup.add(miEdit);
 
-      TrayIcon ti = new TrayIcon(bi, TrayName, popup);
-
-      al = new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          System.out.println(e.getActionCommand());
-        }
-      };
-      ti.setActionCommand("My Icon");
-      ti.addActionListener(al);
-
-      MouseListener ml;
-      ml = new MouseListener() {
-        public void mouseClicked(MouseEvent e) {
-         // System.out.println("Tray icon: Mouse clicked");
-        }
-
-        public void mouseEntered(MouseEvent e) {
-         // System.out.println("Tray icon: Mouse entered");
-        }
-
-        public void mouseExited(MouseEvent e) {
-          //System.out.println("Tray icon: Mouse exited");
-        }
-
-        public void mousePressed(MouseEvent e) {
-          //System.out.println("Tray icon: Mouse pressed");
-        }
-
-        public void mouseReleased(MouseEvent e) {
-          //System.out.println("Tray icon: Mouse released");
-        }
-      };
-      ti.addMouseListener(ml);
-
-      MouseMotionListener mml;
-      mml = new MouseMotionListener() {
-        public void mouseDragged(MouseEvent e) {
-          //System.out.println("Tray icon: Mouse dragged");
-        }
-
-        public void mouseMoved(MouseEvent e) {
-          //System.out.println("Tray icon: Mouse moved");
-        }
-      };
-      ti.addMouseMotionListener(mml);
-
+      ti = new TrayIcon(bi, TrayName, popup);
       tray.add(ti);
+
     } catch (AWTException e) {
       System.out.println(e.getMessage());
       return;
     }
   }
 
-protected static void displayMessage(String string, String string2, MessageType info) {
-	// TODO Auto-generated method stub
-	
-}
+    protected void setConnected() {
+
+        if (!SystemTray.isSupported()) {
+            return;
+        }
+
+        Dimension size = tray.getTrayIconSize();
+        BufferedImage bi = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+        Graphics g = bi.getGraphics();
+
+        g.setColor(Color.green);
+        g.fillRect(0, 0, size.width, size.height);
+        g.setColor(Color.yellow);
+        int ovalSize = (size.width < size.height) ? size.width : size.height;
+        ovalSize /= 2;
+        g.fillOval(size.width / 4, size.height / 4, ovalSize, ovalSize);
+
+        ti.setImage(bi);
+
+
+    }
+
 
 }
 
