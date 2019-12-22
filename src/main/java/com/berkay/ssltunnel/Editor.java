@@ -26,6 +26,7 @@ public class Editor {
     private JComboBox comboBox_clientorserver;
 
     private JButton deleteButton;
+    private JButton createCertificateButton;
 
 
     File file = new File("config.ini");
@@ -148,6 +149,14 @@ public class Editor {
                 comboBox_serviceName.setSelectedIndex(comboBox_serviceName.getItemCount()-1);
 
 
+
+            }
+        });
+        createCertificateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                new ImportKey(textField_certificate.getText());
 
             }
         });
