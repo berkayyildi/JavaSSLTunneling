@@ -19,12 +19,14 @@ public class Editor {
     private JTextField textField_destPort;
     private JTextField textField_ListenPort;
     private JTextField textField_destIp;
+    private JTextField textField_certificate;
     private JButton addNewButton;
     private JComboBox comboBox_protocol;
     private JComboBox comboBox_serviceName;
     private JComboBox comboBox_clientorserver;
 
     private JButton deleteButton;
+
 
     File file = new File("config.ini");
     Ini ini = null;
@@ -54,6 +56,7 @@ public class Editor {
         textField_ListenPort.setText(section.get("ListenPort"));
         textField_destIp.setText(section.get("DestinationIP"));
         textField_destPort.setText(section.get("DestinationPort"));
+        textField_certificate.setText(section.get("Key"));
 
 
 
@@ -69,11 +72,12 @@ public class Editor {
                 try{
                     String selectedItem = comboBox_serviceName.getSelectedItem().toString();
                     //System.out.println("Selected " + selectedItem);
-                    ini.put(selectedItem, "client", comboBox_clientorserver.getSelectedItem().toString());
+                    ini.put(selectedItem, "server", comboBox_clientorserver.getSelectedItem().toString());
                     ini.put(selectedItem, "ListenPort", textField_ListenPort.getText());
                     ini.put(selectedItem, "DestinationIP", textField_destIp.getText());
                     ini.put(selectedItem, "DestinationPort", textField_destPort.getText());
                     ini.put(selectedItem, "Proto", comboBox_protocol.getSelectedItem().toString());
+                    ini.put(selectedItem, "Key", textField_certificate.getText());
 
                     ini.store();
 
@@ -97,7 +101,7 @@ public class Editor {
                         comboBox_serviceName.addItem(newService);
 
                         try {
-                            ini.put(newService, "client", "yes");
+                            ini.put(newService, "server", "yes");
                             ini.put(newService, "ListenPort", "1234");
                             ini.put(newService, "DestinationIP", "10.10.10.1");
                             ini.put(newService, "DestinationPort", "443");
@@ -119,8 +123,7 @@ public class Editor {
                         textField_ListenPort.setText(section.get("ListenPort"));
                         textField_destIp.setText(section.get("DestinationIP"));
                         textField_destPort.setText(section.get("DestinationPort"));
-
-
+                        textField_certificate.setText(section.get("Key"));
 
                 }
 

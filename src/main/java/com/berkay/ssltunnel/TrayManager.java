@@ -108,6 +108,28 @@ public class TrayManager {
 
     }
 
+    protected void setColor(Color mycolor) {
+
+        if (!SystemTray.isSupported()) {
+            return;
+        }
+
+        Dimension size = tray.getTrayIconSize();
+        BufferedImage bi = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+        Graphics g = bi.getGraphics();
+
+        g.setColor(mycolor);
+        g.fillRect(0, 0, size.width, size.height);
+        g.setColor(Color.yellow);
+        int ovalSize = (size.width < size.height) ? size.width : size.height;
+        ovalSize /= 2;
+        g.fillOval(size.width / 4, size.height / 4, ovalSize, ovalSize);
+
+        ti.setImage(bi);
+
+
+    }
+
 
 }
 
